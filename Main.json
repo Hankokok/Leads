@@ -1,0 +1,658 @@
+{
+  "name": "Main",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "322bcc84-39df-4a4f-b035-2abb48ef5240",
+        "responseMode": "lastNode",
+        "responseData": "noData",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7a615b67-1aa8-4cc8-95f2-7cefa3eb5b5f",
+      "name": "Webhook",
+      "webhookId": "322bcc84-39df-4a4f-b035-2abb48ef5240"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты – помощник. Запрос: {{ $json.message }}. Дай: 1. summary (≤200 символов) 2. brand (Rolex/Omega/Patek/none) Выводи JSON вида {\"summary\":\"…\",\"brand\":\"…\"}. Дай: 1. summary (≤200 символов) 2. brand (Rolex/Omega/Patek/none) Выводи JSON вида {\"summary\":\"…\",\"brand\":\"…\"}."
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        420,
+        160
+      ],
+      "id": "1d9f77f9-ccc3-47b7-8fd1-c22107f9753a",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        380,
+        360
+      ],
+      "id": "404973e3-7f91-4136-be0e-66a6809e98a2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rRAv9vzbeZ8vlTDs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1000,
+        20
+      ],
+      "id": "ea09a1fc-cb13-4506-ae5f-e2e8b64f621d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"Brand\": \"{{ JSON.parse($json.text).brand }}\",\n  \"Summary\": \"{{ JSON.parse($json.text).summary }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        780,
+        160
+      ],
+      "id": "91e187d8-5909-4189-a6fa-d94b546565a1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "include": "specifiedFields",
+        "fieldsToInclude": "name, email, Summary, Brand",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        20
+      ],
+      "id": "e8c96ef1-8a86-44ed-b697-e6531a81e17f",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Brand",
+              "renameField": true,
+              "outputFieldName": "Brands"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        120
+      ],
+      "id": "4864892b-1603-422d-ab3e-1c0084fcaf67",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2380,
+        -240
+      ],
+      "id": "caff1c0a-8aa4-4e98-bab4-4b03c82d9a6c",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        -240
+      ],
+      "id": "64eb3ba6-02ec-496c-ac04-86a62d230dd5",
+      "name": "Aggregate2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "38c8300f-e255-4dce-947b-34f99b172c9b",
+              "name": "Brand",
+              "value": "={{ $json.data[1].Brand }}",
+              "type": "string"
+            },
+            {
+              "id": "acd0d832-bc7a-43f3-a056-f54a21468d9d",
+              "name": "=name",
+              "value": "={{ $json.data[0].name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1800,
+        -260
+      ],
+      "id": "85bf862b-4675-4bd5-b8ec-92953141d924",
+      "name": "Get Brand"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3ced9466-e7a1-48c9-8507-0bde6fdb6461",
+              "leftValue": "={{ $json.data[0].Brand }}",
+              "rightValue": "none",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "da3266fa-1c3d-4746-98cd-1c3555756523",
+              "leftValue": "={{ $json.data[1].Brands }}",
+              "rightValue": "={{ $json.data[0].Brand }}",
+              "operator": {
+                "type": "array",
+                "operation": "notContains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2840,
+        -240
+      ],
+      "id": "0983745f-26e7-4b62-9339-b8b946f039dd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let email = $input.item.json.body.email;\nlet message = $input.item.json.body.message;\nconst regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nif(!regex.test(email)){\n  throw new Error('Uncorrect email');\n};\nif(message == \"\"){\n  throw new Error('Empty message');\n}\nreturn $input.item.json.body;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "188ce82a-8b38-4369-937b-50b1c262e239",
+      "name": "Check input info",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0",
+          "mode": "list",
+          "cachedResultName": "Leads_Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Имя": "={{ $json.data[0].name }}",
+            "Email": "={{ $json.data[0].email }}",
+            "Summary": "={{ $json.data[1].Summary }}",
+            "Brand": "={{ $json.data[1].Brand }}",
+            "Дата(ISO)": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Имя",
+              "displayName": "Имя",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand",
+              "displayName": "Brand",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Дата(ISO)",
+              "displayName": "Дата(ISO)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1460,
+        120
+      ],
+      "id": "ce9f159f-66c5-457c-8ddd-7b762d00d1cd",
+      "name": "Add lead",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gHIDQrEXvegIL1EE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $vars.tgChatId }}",
+        "text": "=Новый лид: {{ $json['Имя'] }} - {{ $json.Brand }}",
+        "replyMarkup": "=none",
+        "forceReply": {},
+        "replyKeyboardOptions": {},
+        "replyKeyboardRemove": {},
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        120
+      ],
+      "id": "3ea4103a-3924-4232-8734-077ed67bfe43",
+      "name": "Send notification",
+      "webhookId": "e48b4fb6-2531-4ba1-a68c-afd0fe3e33ec",
+      "credentials": {
+        "telegramApi": {
+          "id": "2SoJlGaSh0sOck5Y",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0",
+          "mode": "list",
+          "cachedResultName": "Leads_Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 423344809,
+          "mode": "list",
+          "cachedResultName": "Watches",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit#gid=423344809"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1900,
+        120
+      ],
+      "id": "acc2e39c-6bc8-4762-a969-c88fd5e7c01e",
+      "name": "Get watches",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gHIDQrEXvegIL1EE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0",
+          "mode": "list",
+          "cachedResultName": "Leads_Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 423344809,
+          "mode": "list",
+          "cachedResultName": "Watches",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit#gid=423344809"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Brand": "={{ $json.data[0].Brand }}",
+            "Имя клиента": "={{ $json.data[0].name }}",
+            "Дата(ISO)": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Brand",
+              "displayName": "Brand",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Имя клиента",
+              "displayName": "Имя клиента",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Дата(ISO)",
+              "displayName": "Дата(ISO)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3100,
+        -260
+      ],
+      "id": "029c9bc0-e56c-4dec-b41c-7f984344be71",
+      "name": "Add new watch",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gHIDQrEXvegIL1EE",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check input info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Add lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Brand",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Brand": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Add new watch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check input info": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add lead": {
+      "main": [
+        [
+          {
+            "node": "Send notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send notification": {
+      "main": [
+        [
+          {
+            "node": "Get watches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get watches": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "vI2Z3NEjF95zoTlk"
+  },
+  "versionId": "a8347bcd-5742-496f-9c7f-305bb705033f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "047fc11a59a407a54b95543a2d15845f9931610cf62ea869b6b9f9c0439f08a4"
+  },
+  "id": "mJJuE65LamrehVAc",
+  "tags": []
+}

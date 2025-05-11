@@ -1,0 +1,133 @@
+{
+  "name": "Catch",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        40,
+        40
+      ],
+      "id": "a8b996c6-f2b6-4c5d-b1c3-f28f0a6a6556",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0",
+          "mode": "list",
+          "cachedResultName": "Leads_Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 441131996,
+          "mode": "list",
+          "cachedResultName": "Errors",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xpTi7mA5G63_ur5UIiToGEijXdT7eQuneVKd3IPn8v0/edit#gid=441131996"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Error": "={{ $json.execution.error.message }}",
+            "Дата": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        40
+      ],
+      "id": "837662c4-20d3-460e-bf89-ea46cec447f8",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gHIDQrEXvegIL1EE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        40
+      ],
+      "id": "48eb628a-fe84-4997-b570-2419cfb9300d",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "15e6b8f3-1f3e-4db5-9999-dd3e174d8840",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "047fc11a59a407a54b95543a2d15845f9931610cf62ea869b6b9f9c0439f08a4"
+  },
+  "id": "vI2Z3NEjF95zoTlk",
+  "tags": []
+}
